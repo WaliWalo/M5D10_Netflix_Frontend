@@ -1,5 +1,10 @@
 import React, { Component } from "react";
 import { Col, Container, Row } from "react-bootstrap";
+import {
+  getAllMovies,
+  getMoviesByImdbId,
+  getMoviesByTitle,
+} from "../api/mediaApi";
 import SingleMovie from "./SingleMovie";
 import WarningSign from "./WarningSign";
 
@@ -11,6 +16,7 @@ export default class ListMovies extends Component {
     searchQuery: [],
     emptyQuery: [],
     loading: true,
+    movies: [],
   };
 
   myfetch = async (query) => {
@@ -45,10 +51,29 @@ export default class ListMovies extends Component {
       this.setState({ loading: false });
     }
   };
+
+  fetchAllMovies = async () => {
+    const movies = await getAllMovies();
+    this.setState({ movies });
+  };
+
+  fetchMoviesByImdbId = async (imdbId) => {
+    const movies = await getMoviesByImdbId(imdbId);
+  };
+
+  fetchMoviesByTitle = async (query) => {
+    let movies = await getMoviesByTitle(query);
+    if (movies === undefined) {
+      movies = [];
+    }
+    this.setState({ searchQuery: movies.Search, loading: false });
+  };
+
   componentDidMount = async () => {
-    await this.myfetch("harry");
+    //await this.myfetch("harry");
     await this.myfetch("superman");
     await this.myfetch("batman");
+    await this.fetchAllMovies();
   };
   async componentDidUpdate(prevProp) {
     // Typical usage (don't forget to compare props):
@@ -57,7 +82,7 @@ export default class ListMovies extends Component {
       this.props.year !== prevProp.year ||
       this.props.type !== prevProp.type
     ) {
-      this.myfetch(this.props.query);
+      this.fetchMoviesByTitle(this.props.query);
     }
   }
   render() {
@@ -65,7 +90,7 @@ export default class ListMovies extends Component {
       <div>
         <Container className="p-0">
           <h3>{this.state.loading ? "Loading..." : this.props.query}</h3>
-          {this.state.searchQuery.length === 0 &&
+          {this.state.searchQuery === undefined &&
           this.props.query.length > 0 ? (
             <WarningSign query={this.props.query} />
           ) : (
@@ -75,7 +100,7 @@ export default class ListMovies extends Component {
                   xs={6}
                   md={3}
                   lg={2}
-                  key={`movieId${movie.imdbID}`}
+                  key={`movieId${movie.Poster}`}
                   className="mb-5 px-1"
                 >
                   <SingleMovie
@@ -86,17 +111,17 @@ export default class ListMovies extends Component {
               ))}
             </Row>
           )}
-          {this.props.path !== "/tvShow" && (
-            <>
-              <h3>{this.state.loading ? "Loading..." : "Trending now"}</h3>
 
+          <>
+            <h3>{this.state.loading ? "Loading..." : "Trending now"}</h3>
+            {this.state.movies && (
               <Row style={{ marginBottom: "20px" }}>
-                {this.state.harrypoter.map((movie) => (
+                {this.state.movies.map((movie) => (
                   <Col
                     xs={6}
                     md={3}
                     lg={2}
-                    key={`movieId${movie.imdbID}`}
+                    key={`${movie.imdbID}`}
                     className="mb-5 px-1"
                   >
                     <SingleMovie
@@ -106,44 +131,8 @@ export default class ListMovies extends Component {
                   </Col>
                 ))}
               </Row>
-              <h3>{this.state.loading ? "Loading..." : "Watch It Again"}</h3>
-
-              <Row style={{ marginBottom: "20px" }}>
-                {this.state.superman.map((movie) => (
-                  <Col
-                    xs={6}
-                    md={3}
-                    lg={2}
-                    key={`movieId${movie.imdbID}`}
-                    className="mb-5 px-1"
-                  >
-                    <SingleMovie
-                      obj={movie}
-                      history={this.props.history}
-                    ></SingleMovie>
-                  </Col>
-                ))}
-              </Row>
-              <h3>{this.state.loading ? "Loading..." : "New Releases"}</h3>
-
-              <Row>
-                {this.state.batman.map((movie) => (
-                  <Col
-                    xs={6}
-                    md={3}
-                    lg={2}
-                    key={`movieId${movie.imdbID}`}
-                    className="mb-3 px-1"
-                  >
-                    <SingleMovie
-                      obj={movie}
-                      history={this.props.history}
-                    ></SingleMovie>
-                  </Col>
-                ))}
-              </Row>
-            </>
-          )}
+            )}
+          </>
         </Container>
       </div>
     );
