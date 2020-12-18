@@ -1,0 +1,39 @@
+.container-fluid {
+  background-color: rgb(44, 44, 44);
+  height: 4rem;
+  align-items: center;
+}
+#main {
+  padding-top: 0.5rem;
+  margin: 0rem 1rem 0 1rem;
+}
+div.nav-items a {
+  margin-right: 0.8rem;
+  margin-top: 0.5rem;
+  color: white;
+}
+
+div.nav-items a:hover {
+  text-decoration: none;
+  color: rgb(153, 153, 153);
+}
+
+div.right-side {
+  align-items: center;
+}
+
+div.right-side .inpu {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  height: 23px;
+  width: 50px;
+  font-size: 15px;
+  background: transparent;
+  border: none;
+}
+
+#dropdown-basic {
+  background-color: transparent;
+  margin-left: 0.8rem;
+  border: none;
+}
